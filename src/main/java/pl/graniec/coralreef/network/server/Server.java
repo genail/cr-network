@@ -41,6 +41,8 @@ import java.util.List;
 
 import pl.graniec.coralreef.network.Network;
 import pl.graniec.coralreef.network.PacketListener;
+import pl.graniec.coralreef.network.packets.ConnectPacketData;
+import pl.graniec.coralreef.network.packets.ControllPacketData;
 import pl.graniec.coralreef.network.packets.Packet;
 import pl.graniec.coralreef.network.packets.PacketData;
 
@@ -74,14 +76,14 @@ public class Server {
 					byteArrayInputStream.reset();
 					PacketData packetData = (PacketData)objectInputStream.readObject();
 					
-					// build a packet object and notify the listeners
+					// build a packet object and handle this packet
 					packet = new Packet(
 							datagramPacket.getAddress().getHostAddress(),
 							datagramPacket.getPort(),
 							packetData
 					);
 					
-					notifyPacketReceived(packet);
+					handlePacket(packet);
 				}
 				
 			} catch (IOException e) {
@@ -99,8 +101,8 @@ public class Server {
 	/** Host to work on */
 	private final InetAddress host;
 	
-	/** The packet listeners */
-	private final List<PacketListener> packetListeners = new LinkedList<PacketListener>();
+	/** Server clients */
+	private List<RemoteClient> clients = new LinkedList<RemoteClient>();
 	
 	/**
 	 * Creates a new server that will bind on given host and port number.
@@ -129,12 +131,6 @@ public class Server {
 		
 	}
 	
-	public void addPacketListener(PacketListener l) {
-		synchronized (packetListeners) {
-			packetListeners.add(l);
-		}
-	}
-	
 	/**
 	 * Provides a port on which the server is/would be running.
 	 * <p>
@@ -154,27 +150,6 @@ public class Server {
 	
 	public boolean isRunning() {
 		return socket != null && socket.isBound();
-	}
-	
-	private void notifyPacketReceived(Packet packet) {
-		// make a copy of the list
-		PacketListener[] copy;
-		
-		synchronized (packetListeners) {
-			copy = new PacketListener[packetListeners.size()];
-			packetListeners.toArray(copy);
-		}
-		
-		// notify all
-		for (PacketListener l : copy) {
-			l.packetReceived(packet);
-		}
-	}
-	
-	public boolean removePacketListener(PacketListener l) {
-		synchronized (packetListeners) {
-			return packetListeners.remove(l);
-		}
 	}
 	
 	/**
@@ -197,6 +172,86 @@ public class Server {
 		
 		socket.close();
 		socket = null;
+	}
+	
+	private void handlePacket(Packet packet) {
+		if (packet.getData() instanceof ControllPacketData) {
+			handleControllPacketData(packet);
+		} else {
+			handleRegularPacketData(packet);
+		}
+	}
+
+	/**
+	 * @param packet
+	 */
+	private void handleRegularPacketData(Packet packet) {
+		final PacketData data = packet.getData();
+		
+		if (data instanceof ConnectPacketData) {
+			handleConnectPacketData((ConnectPacketData)data);
+		}
+	}
+
+	/**
+	 * @param data
+	 */
+	private void handleConnectPacketData(ConnectPacketData data) {
+		int passport = createNewPassport();
+		
+		// send back passport info
+	}
+	
+	protected void send(PacketData data, String host, int port) {
+		
+		if (data == null || host == null || host.isEmpty()) {
+			throw new IllegalArgumentException("cannot take null/empty values");
+		}
+		
+		if (!Network.isPortValid(port)) {
+			throw new IllegalArgumentException("number " + port + " is not valid port number");
+		}
+		
+		if (!isRunning()) {
+			throw new IllegalStateException("server is not running");
+		}
+		
+		// TODO: This should be synchronized with socket state
+		// FIXME: Finished here
+	}
+	
+	private int createNewPassport() {
+		int passport;
+		
+		do {
+			passport = (int)(Math.random() * Integer.MAX_VALUE);
+		} while (isPassportInUse(passport));
+		
+		return passport;
+	}
+
+	/**
+	 * @param result
+	 * @return
+	 */
+	private boolean isPassportInUse(int result) {
+		synchronized (clients) {
+			for (RemoteClient c : clients) {
+				if (c.getPassport() == result) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+	}
+
+	/**
+	 * @param packet
+	 */
+	private void handleControllPacketData(Packet packet) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
