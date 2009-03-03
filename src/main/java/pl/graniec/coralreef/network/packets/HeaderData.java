@@ -28,11 +28,38 @@
  */
 package pl.graniec.coralreef.network.packets;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public interface PacketData {
+public class HeaderData implements PacketData, Externalizable {
+
+	private int passport;
+	
+	public HeaderData(int passport) {
+		this.passport = passport;
+	}
+	
+	/**
+	 * @return the passport
+	 */
+	public final int getPassport() {
+		return passport;
+	}
+	
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		passport = in.readInt();
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(passport);
+	}
 
 }

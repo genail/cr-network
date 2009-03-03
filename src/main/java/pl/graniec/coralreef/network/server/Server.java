@@ -29,22 +29,31 @@
 package pl.graniec.coralreef.network.server;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import pl.graniec.coralreef.network.Network;
-import pl.graniec.coralreef.network.PacketListener;
 import pl.graniec.coralreef.network.packets.ConnectPacketData;
 import pl.graniec.coralreef.network.packets.ControllPacketData;
+import pl.graniec.coralreef.network.packets.DisconnectPacketData;
+import pl.graniec.coralreef.network.packets.HeaderData;
 import pl.graniec.coralreef.network.packets.Packet;
 import pl.graniec.coralreef.network.packets.PacketData;
+import pl.graniec.coralreef.network.packets.PassportAssignData;
+import pl.graniec.coralreef.network.packets.PongPacketData;
+import pl.graniec.coralreef.network.packets.UserData;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -94,6 +103,8 @@ public class Server {
 		}
 	}
 	
+	private final static Logger logger = Logger.getLogger(Server.class.getName());
+	
 	/** The socket */
 	private DatagramSocket socket;
 	/** Port to work on */
@@ -102,7 +113,10 @@ public class Server {
 	private final InetAddress host;
 	
 	/** Server clients */
-	private List<RemoteClient> clients = new LinkedList<RemoteClient>();
+	private Map<Integer, RemoteClient> clients = new HashMap<Integer, RemoteClient>();
+	
+	/** Connection/disconnection listeners */
+	private List<ConnectionListener> connectionListeners = new LinkedList<ConnectionListener>();
 	
 	/**
 	 * Creates a new server that will bind on given host and port number.
@@ -131,6 +145,33 @@ public class Server {
 		
 	}
 	
+	public void addConnectionListener(ConnectionListener l) {
+		synchronized (connectionListeners) {
+			connectionListeners.add(l);
+		}
+	}
+	
+	private void addNewClient(String host, int port, int passport) {
+		
+		RemoteClient client = new RemoteClient(this, host, port, passport);
+		
+		synchronized (clients) {
+			clients.put(passport, client);
+		}
+		
+		notifyClientConnected(client);
+	}
+	
+	private int createNewPassport() {
+		int passport;
+		
+		do {
+			passport = (int)(Math.random() * Integer.MAX_VALUE);
+		} while (isPassportInUse(passport));
+		
+		return passport;
+	}
+	
 	/**
 	 * Provides a port on which the server is/would be running.
 	 * <p>
@@ -148,61 +189,175 @@ public class Server {
 		}
 	}
 	
-	public boolean isRunning() {
-		return socket != null && socket.isBound();
+	/**
+	 * @param data
+	 */
+	private void handleConnectPacket(Packet packet) {
+		final int passport = createNewPassport();
+		
+		// send back passport info
+		try {
+			
+			final PacketData answer = new PassportAssignData(passport);
+			send(answer, packet.getSenderHost(), packet.getSenderPort());
+			
+			addNewClient(packet.getSenderHost(), packet.getSenderPort(), passport);
+			
+		} catch (IOException e) {
+			logger.warning("cannot send back passport to client: " + e.getMessage());
+		}
 	}
 	
 	/**
-	 * Starts the server on local machine using previously given port number.
-	 * @throws SocketException
+	 * @param packet
 	 */
-	public void start() throws SocketException {
+	private void handleControllPacket(Packet packet) {
+		final PacketData data = packet.getData();
 		
-		if (isRunning()) {
-			throw new IllegalStateException("server is already running");
-		}
-		
-		socket = new DatagramSocket(port, host);
-	}
-	
-	public void stop() {
-		if (!isRunning()) {
-			throw new IllegalStateException("server is not running");
-		}
-		
-		socket.close();
-		socket = null;
-	}
-	
-	private void handlePacket(Packet packet) {
-		if (packet.getData() instanceof ControllPacketData) {
-			handleControllPacketData(packet);
+		if (data instanceof ConnectPacketData) {
+			handleConnectPacket(packet);
+		} else
+		if (data instanceof DisconnectPacketData) {
+			handleDisconnectPacket(packet);
+		} else
+		if (data instanceof PongPacketData) {
+			handlePongPacket(packet);
 		} else {
-			handleRegularPacketData(packet);
+			logger.info("unexpected controll packet income: " + packet.getData().getClass());
 		}
+		
+	}
+	
+	/**
+	 * @param packet
+	 */
+	private void handlePongPacket(Packet packet) {
+		//FIXME: implement me!
 	}
 
 	/**
 	 * @param packet
 	 */
-	private void handleRegularPacketData(Packet packet) {
+	private void handleDisconnectPacket(Packet packet) {
+		
+	}
+
+	private void handlePacket(Packet packet) {
+		
+		/*
+		 * Packets falls into two groups:
+		 * 1) Special control packets
+		 * 2) User custom packets.
+		 * 
+		 * The first one is used only by server to connect, disconnect,
+		 * examine and keep alive server clients. User programmer doesn't
+		 * need to be aware of this packets at all.
+		 * 
+		 * The second one are packets that are only user defined data
+		 * packets. Its is group into UserData object that held HeaderData
+		 * object and actual user data.
+		 */
+		
 		final PacketData data = packet.getData();
 		
-		if (data instanceof ConnectPacketData) {
-			handleConnectPacketData((ConnectPacketData)data);
+		if (data instanceof ControllPacketData) {
+			handleControllPacket(packet);
+		} else
+		if (data instanceof UserData){
+			handleUserDataPacket(packet);
+		} else {
+			logger.severe("unknown top-level packet data class: " + data.getClass().getName());
 		}
+	}
+	
+	/**
+	 * @param packet
+	 */
+	private void handleUserDataPacket(Packet packet) {
+		/*
+		 * Regular packets are build from two parts like this:
+		 * 
+		 *  ____________________
+		 * |        |           |
+		 * | HEADER | USER DATA |
+		 * |________|___________|
+		 * 
+		 * 
+		 * Header contains important information that helps to
+		 * identify sender (passport). After this there is a
+		 * data send by user that server should handle externally
+		 * ( by packet handling event ).
+		 */
+		
+		final HeaderData header = ((UserData)packet.getData()).getHeader();
+		final PacketData body   = ((UserData)packet.getData()).getBody();
+		
+		RemoteClient client;
+		
+		synchronized (clients) {
+			// check passport correctness
+			client = clients.get(header.getPassport());
+			
+			if (client == null) {
+				logger.warning("received packet " + packet + " from unknown client");
+				return;
+			}
+			
+		}
+		
+		// notify client about new data
+		client.notifyPacketReceived(body);
+		
 	}
 
 	/**
-	 * @param data
+	 * @param result
+	 * @return
 	 */
-	private void handleConnectPacketData(ConnectPacketData data) {
-		int passport = createNewPassport();
+	private boolean isPassportInUse(int result) {
+		synchronized (clients) {
+			return clients.containsKey(result);
+		}
+	}
+
+	public boolean isRunning() {
+		return socket != null && socket.isBound();
+	}
+
+	/**
+	 * @param client
+	 */
+	private void notifyClientConnected(RemoteClient client) {
 		
-		// send back passport info
+		// make listeners copy
+		ConnectionListener[] copy;
+		
+		synchronized (connectionListeners) {
+			copy = new ConnectionListener[connectionListeners.size()];
+			connectionListeners.toArray(copy);
+		}
+		
+		// notify all
+		for (ConnectionListener l : copy) {
+			l.clientConnected(client);
+		}
 	}
 	
-	protected void send(PacketData data, String host, int port) {
+	private byte[] packetDataToByteArray(PacketData data) throws IOException {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+		
+		objectOutputStream.writeObject(data);
+		return byteArrayOutputStream.toByteArray();
+	}
+	
+	public boolean removeConnectionListener(ConnectionListener l) {
+		synchronized (connectionListeners) {
+			return connectionListeners.remove(l);
+		}
+	}
+	
+	protected void send(PacketData data, String host, int port) throws IOException {
 		
 		if (data == null || host == null || host.isEmpty()) {
 			throw new IllegalArgumentException("cannot take null/empty values");
@@ -215,43 +370,35 @@ public class Server {
 		if (!isRunning()) {
 			throw new IllegalStateException("server is not running");
 		}
+
+		// construct packet
+		byte[] buffer = packetDataToByteArray(data);
+		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		
-		// TODO: This should be synchronized with socket state
-		// FIXME: Finished here
-	}
-	
-	private int createNewPassport() {
-		int passport;
-		
-		do {
-			passport = (int)(Math.random() * Integer.MAX_VALUE);
-		} while (isPassportInUse(passport));
-		
-		return passport;
+		// send it forward
+		socket.send(packet);
 	}
 
 	/**
-	 * @param result
-	 * @return
+	 * Starts the server on local machine using previously given port number.
+	 * @throws SocketException
 	 */
-	private boolean isPassportInUse(int result) {
-		synchronized (clients) {
-			for (RemoteClient c : clients) {
-				if (c.getPassport() == result) {
-					return true;
-				}
-			}
-			
-			return false;
+	public void start() throws SocketException {
+		
+		if (isRunning()) {
+			throw new IllegalStateException("server is already running");
 		}
+		
+		socket = new DatagramSocket(port, host);
 	}
 
-	/**
-	 * @param packet
-	 */
-	private void handleControllPacketData(Packet packet) {
-		// TODO Auto-generated method stub
+	public void stop() {
+		if (!isRunning()) {
+			throw new IllegalStateException("server is not running");
+		}
 		
+		socket.close();
+		socket = null;
 	}
 	
 }

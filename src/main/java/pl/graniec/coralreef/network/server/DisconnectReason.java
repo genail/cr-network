@@ -26,13 +26,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.coralreef.network.packets;
-
+package pl.graniec.coralreef.network.server;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public interface PacketData {
-
+public enum DisconnectReason {
+	/** This one occurs when client leaves server by his own will */
+	Leaving,
+	/** This one occurs when client stops to response to server calls */
+	ResponseTimeout,
+	/** This one occurs when client is disconnected by server aware action */
+	ServerAction
 }

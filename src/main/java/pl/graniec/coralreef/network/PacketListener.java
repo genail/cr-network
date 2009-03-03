@@ -28,12 +28,12 @@
  */
 package pl.graniec.coralreef.network;
 
-import pl.graniec.coralreef.network.packets.Packet;
+import pl.graniec.coralreef.network.packets.PacketData;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
 public interface PacketListener {
-	void packetReceived(Packet packet);
+	void packetReceived(PacketData data);
 }

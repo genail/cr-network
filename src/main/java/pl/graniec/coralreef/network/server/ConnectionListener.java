@@ -26,13 +26,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.coralreef.network.packets;
-
+package pl.graniec.coralreef.network.server;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public interface PacketData {
-
+public interface ConnectionListener {
+	/**
+	 * Called when new client connects to a running server.
+	 * <p>
+	 * You can set a listener on this new client (and most probably this is what
+	 * you want) to get all packets send by this client to server.
+	 * 
+	 * @param client Client that have connected.
+	 */
+	void clientConnected(RemoteClient client);
+	
+	/**
+	 * Called when a connected client is no longer connected to the server.
+	 * This call also provides a disconnect reason that tells why exactly
+	 * client've disconnected.
+	 * 
+	 * @param client Disconnected client.
+	 * @param reason Reason of disconnection.
+	 */
+	void clientDisconnected(RemoteClient client, DisconnectReason reason);
 }

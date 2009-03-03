@@ -28,11 +28,52 @@
  */
 package pl.graniec.coralreef.network.packets;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public interface PacketData {
+public class UserData implements PacketData, Externalizable {
+	private HeaderData header;
+	private PacketData body;
+	
+	/**
+	 * @param header
+	 * @param body
+	 */
+	public UserData(HeaderData header, PacketData body) {
+		super();
+		this.header = header;
+		this.body = body;
+	}
 
+	/**
+	 * @return the body
+	 */
+	public PacketData getBody() {
+		return body;
+	}
+	
+	/**
+	 * @return the header
+	 */
+	public HeaderData getHeader() {
+		return header;
+	}
+	
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		header = (HeaderData) in.readObject();
+		body = (PacketData) in.readObject();
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(header);
+		out.writeObject(body);
+	}
 }

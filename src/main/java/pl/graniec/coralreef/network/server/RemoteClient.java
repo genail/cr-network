@@ -33,6 +33,7 @@ import java.util.List;
 
 import pl.graniec.coralreef.network.PacketListener;
 import pl.graniec.coralreef.network.packets.Packet;
+import pl.graniec.coralreef.network.packets.PacketData;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -97,7 +98,7 @@ public class RemoteClient {
 		return port;
 	}
 	
-	void notifyPacketReceived(Packet packet) {
+	void notifyPacketReceived(PacketData packet) {
 		// make a copy of the list
 		PacketListener[] copy;
 		
