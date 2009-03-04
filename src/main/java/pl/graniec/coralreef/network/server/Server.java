@@ -73,13 +73,13 @@ public class Server {
 				DatagramPacket datagramPacket;
 				byte[] buffer = new byte[BUFFER_SIZE];
 				
-				ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
-				ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-				
 				while (!isInterrupted()) {
 				
 					datagramPacket = new DatagramPacket(buffer, BUFFER_SIZE);
 					socket.receive(datagramPacket);
+					
+					ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
+					ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
 					
 					// decode object
 					byteArrayInputStream.reset();
@@ -95,6 +95,12 @@ public class Server {
 					handlePacket(packet);
 				}
 				
+			} catch (SocketException e) {
+				if (socket.isClosed()) {
+					return;
+				}
+				
+				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
@@ -111,6 +117,9 @@ public class Server {
 	private final int port;
 	/** Host to work on */
 	private final InetAddress host;
+	
+	/** Receiver thread */
+	private ReceiverThread receiverThread;
 	
 	/** Server clients */
 	private Map<Integer, RemoteClient> clients = new HashMap<Integer, RemoteClient>();
@@ -390,15 +399,22 @@ public class Server {
 		}
 		
 		socket = new DatagramSocket(port, host);
+		
+		// running receiver thread
+		receiverThread = new ReceiverThread();
+		receiverThread.start();
 	}
 
-	public void stop() {
+	public void stop() throws InterruptedException {
 		if (!isRunning()) {
 			throw new IllegalStateException("server is not running");
 		}
 		
 		socket.close();
-		socket = null;
+//		socket = null;
+		
+		receiverThread.interrupt();
+		receiverThread.join();
 	}
 	
 }

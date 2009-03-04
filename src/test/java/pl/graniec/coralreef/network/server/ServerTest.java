@@ -30,12 +30,23 @@ package pl.graniec.coralreef.network.server;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import pl.graniec.coralreef.network.packets.ConnectPacketData;
+import pl.graniec.coralreef.network.packets.PassportAssignData;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -53,7 +64,7 @@ public class ServerTest {
 	} 
 	
 	@After
-	public void tearDown() {
+	public void tearDown() throws InterruptedException {
 		if (server.isRunning()) {
 			server.stop();
 		}
@@ -72,9 +83,10 @@ public class ServerTest {
 	/**
 	 * Test method for {@link pl.graniec.coralreef.network.server.Server#stop()}.
 	 * @throws SocketException 
+	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testStop() throws SocketException {
+	public void testStop() throws SocketException, InterruptedException {
 		server.start();
 		assertTrue(server.isRunning());
 		
@@ -86,9 +98,10 @@ public class ServerTest {
 	 * Test method for {@link pl.graniec.coralreef.network.server.Server#setPort(int)}.
 	 * @throws SocketException 
 	 * @throws UnknownHostException 
+	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testGetPort() throws SocketException, UnknownHostException {
+	public void testGetPort() throws SocketException, UnknownHostException, InterruptedException {
 		assertEquals(PORT, server.getPort());
 		server.start();
 		
@@ -103,6 +116,52 @@ public class ServerTest {
 		assertFalse(otherServer.getPort() == 0);
 		
 		otherServer.stop();
+	}
+	
+	@Test
+	public void testConnection() throws IOException, ClassNotFoundException, InterruptedException {
+		
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+		
+		startServer();
+		
+		// prepare socket
+		DatagramSocket socket = new DatagramSocket();
+		
+		InetAddress address = InetAddress.getLocalHost();
+		socket.connect(address, PORT);
+		
+		// prepare packet
+		ConnectPacketData connectPacketData = new ConnectPacketData();
+		objectOutputStream.writeObject(connectPacketData);
+		byte[] data = byteArrayOutputStream.toByteArray();
+		
+		DatagramPacket packet = new DatagramPacket(data, data.length);
+		
+		// send packet
+		socket.send(packet);
+		
+		// get incoming packet
+		socket.receive(packet);
+		
+		// unpack data
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packet.getData());
+		ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+		
+		Object obj = objectInputStream.readObject();
+		
+		assertEquals(PassportAssignData.class, obj.getClass());
+		
+		stopServer();
+	}
+	
+	private void startServer() throws SocketException {
+		server.start();
+	}
+	
+	private void stopServer() throws InterruptedException {
+		server.stop();
 	}
 
 }

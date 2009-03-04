@@ -28,6 +28,7 @@
  */
 package pl.graniec.coralreef.network.packets;
 
+
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
