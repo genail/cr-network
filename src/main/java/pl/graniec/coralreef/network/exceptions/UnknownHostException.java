@@ -26,46 +26,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.coralreef.network.packets;
-
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+package pl.graniec.coralreef.network.exceptions;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class PassportAssignData implements ControllPacketData, Externalizable {
-	/** Passport (connection id) */
-	private int passport;
+public class UnknownHostException extends NetworkException {
 
-	public PassportAssignData() {
-	}
-	
-	/**
-	 * @param passport
-	 */
-	public PassportAssignData(int passport) {
-		super();
-		this.passport = passport;
-	}
-	
-	/**
-	 * @return the passport
-	 */
-	public int getPassport() {
-		return passport;
+	private static final long serialVersionUID = -4017093279565191703L;
+
+	public UnknownHostException() {
 	}
 
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		passport = in.readInt();
+	public UnknownHostException(String message) {
+		super(message);
 	}
 
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeInt(passport);
+	public UnknownHostException(Throwable cause) {
+		super(cause);
 	}
+
+	public UnknownHostException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

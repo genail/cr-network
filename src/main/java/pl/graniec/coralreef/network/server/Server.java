@@ -28,6 +28,7 @@
  */
 package pl.graniec.coralreef.network.server;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -79,7 +80,8 @@ public class Server {
 					socket.receive(datagramPacket);
 					
 					ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
-					ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+					BufferedInputStream bufferedInputStream = new BufferedInputStream(byteArrayInputStream);
+					ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
 					
 					// decode object
 					byteArrayInputStream.reset();
@@ -213,7 +215,7 @@ public class Server {
 			addNewClient(packet.getSenderHost(), packet.getSenderPort(), passport);
 			
 		} catch (IOException e) {
-			logger.warning("cannot send back passport to client: " + e.getMessage());
+			logger.warning("cannot send back passport to client: " + e);
 		}
 	}
 	
@@ -330,7 +332,7 @@ public class Server {
 	}
 
 	public boolean isRunning() {
-		return socket != null && socket.isBound();
+		return socket != null && !socket.isClosed();
 	}
 
 	/**
@@ -357,6 +359,10 @@ public class Server {
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
 		
 		objectOutputStream.writeObject(data);
+		
+		objectOutputStream.close();
+		byteArrayOutputStream.close();
+		
 		return byteArrayOutputStream.toByteArray();
 	}
 	
@@ -380,9 +386,15 @@ public class Server {
 			throw new IllegalStateException("server is not running");
 		}
 
-		// construct packet
+		// construct packet (for sending)
 		byte[] buffer = packetDataToByteArray(data);
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+		
+		DatagramPacket packet = new DatagramPacket(
+				buffer,
+				buffer.length,
+				InetAddress.getByName(host),
+				port
+		);
 		
 		// send it forward
 		socket.send(packet);

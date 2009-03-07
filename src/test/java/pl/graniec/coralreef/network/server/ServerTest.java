@@ -30,6 +30,7 @@ package pl.graniec.coralreef.network.server;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -135,21 +136,33 @@ public class ServerTest {
 		// prepare packet
 		ConnectPacketData connectPacketData = new ConnectPacketData();
 		objectOutputStream.writeObject(connectPacketData);
+		
+		objectOutputStream.close();
+		byteArrayOutputStream.close();
+		
 		byte[] data = byteArrayOutputStream.toByteArray();
 		
-		DatagramPacket packet = new DatagramPacket(data, data.length);
+		DatagramPacket packetToSend = new DatagramPacket(data, data.length);
 		
 		// send packet
-		socket.send(packet);
+		socket.send(packetToSend);
 		
 		// get incoming packet
-		socket.receive(packet);
+		byte[] rdata = new byte[1024 * 32];
+		DatagramPacket packetToReceive = new DatagramPacket(rdata, rdata.length);
+		
+		socket.receive(packetToReceive);
 		
 		// unpack data
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(packet.getData());
-		ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(rdata);
+		BufferedInputStream bufferedInputStream = new BufferedInputStream(byteArrayInputStream);
+		ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
 		
 		Object obj = objectInputStream.readObject();
+		
+		objectInputStream.close();
+		bufferedInputStream.close();
+		byteArrayInputStream.close();
 		
 		assertEquals(PassportAssignData.class, obj.getClass());
 		

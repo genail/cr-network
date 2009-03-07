@@ -26,46 +26,68 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.coralreef.network.packets;
+package pl.graniec.coralreef.network;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import pl.graniec.coralreef.network.client.Client;
+import pl.graniec.coralreef.network.exceptions.NetworkException;
+import pl.graniec.coralreef.network.server.ConnectionListener;
+import pl.graniec.coralreef.network.server.RemoteClient;
+import pl.graniec.coralreef.network.server.Server;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class PassportAssignData implements ControllPacketData, Externalizable {
-	/** Passport (connection id) */
-	private int passport;
+public class ModuleTest {
 
-	public PassportAssignData() {
-	}
+	/**
+	 * 
+	 */
+	private static final int PORT = 9999;
+	private Client client;
+	private Server server;
 	
 	/**
-	 * @param passport
+	 * @throws java.lang.Exception
 	 */
-	public PassportAssignData(int passport) {
-		super();
-		this.passport = passport;
+	@Before
+	public void setUp() throws Exception {
+		server = new Server("0.0.0.0", PORT);
+		server.start();
+		
+		client = new Client();
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		server.stop();
 	}
 	
-	/**
-	 * @return the passport
-	 */
-	public int getPassport() {
-		return passport;
+	@Test
+	public void testConnection() throws NetworkException {
+		client.connect("127.0.0.1", PORT);
+		
+		assertTrue(client.isConnected());
+	}
+	
+	@Test
+	public void testDisconnection() throws NetworkException {
+		
+		client.connect("127.0.0.1", PORT);
+		client.disconnect();
+		
+		assertFalse(client.isConnected());
 	}
 
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		passport = in.readInt();
-	}
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeInt(passport);
-	}
 }

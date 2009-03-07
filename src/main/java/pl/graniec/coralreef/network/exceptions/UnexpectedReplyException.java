@@ -26,46 +26,42 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.coralreef.network.packets;
-
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+package pl.graniec.coralreef.network.exceptions;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class PassportAssignData implements ControllPacketData, Externalizable {
-	/** Passport (connection id) */
-	private int passport;
+public class UnexpectedReplyException extends NetworkException {
 
-	public PassportAssignData() {
-	}
-	
+	private static final long serialVersionUID = 881266373692527389L;
+
 	/**
-	 * @param passport
+	 * 
 	 */
-	public PassportAssignData(int passport) {
-		super();
-		this.passport = passport;
+	public UnexpectedReplyException() {
 	}
-	
+
 	/**
-	 * @return the passport
+	 * @param arg0
 	 */
-	public int getPassport() {
-		return passport;
+	public UnexpectedReplyException(String arg0) {
+		super(arg0);
 	}
 
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		passport = in.readInt();
+	/**
+	 * @param arg0
+	 */
+	public UnexpectedReplyException(Throwable arg0) {
+		super(arg0);
 	}
 
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeInt(passport);
+	/**
+	 * @param arg0
+	 * @param arg1
+	 */
+	public UnexpectedReplyException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
 	}
+
 }
