@@ -28,10 +28,12 @@
  */
 package pl.graniec.coralreef.network.packets;
 
+import java.io.Serializable;
+
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class DisconnectPacketData implements ControllPacketData {
+public class DisconnectPacketData implements ControllPacketData, Serializable {
 
 }

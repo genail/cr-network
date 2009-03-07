@@ -188,7 +188,7 @@ public class Client {
 			// got passport
 			passport = ((PassportAssignData)packet).getPassport();
 			
-			logger.info("passport assigned: " + passport);
+			logger.fine("passport assigned: " + passport);
 			
 		} catch (SocketTimeoutException e) {
 			throw new TimeoutException(e.getMessage());
@@ -269,9 +269,9 @@ public class Client {
 		try {
 			socket.send(pack(data, userData));
 		} catch (SecurityException e) {
-			throw new pl.graniec.coralreef.network.exceptions.SecurityException(e.getMessage());
+			throw new pl.graniec.coralreef.network.exceptions.SecurityException(e);
 		} catch (IOException e) {
-			throw new NetworkException(e.getMessage());
+			throw new NetworkException(e);
 		}
 	}
 	

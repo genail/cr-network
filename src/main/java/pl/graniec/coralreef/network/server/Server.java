@@ -200,6 +200,18 @@ public class Server {
 		}
 	}
 	
+	private RemoteClient getRemoteClient(String host, int port) {
+		synchronized (clients) {
+			for (RemoteClient rc : clients.values()) {
+				if (rc.getPort() == port && rc.getHost().equals(host)) {
+					return rc;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * @param data
 	 */
@@ -238,21 +250,28 @@ public class Server {
 		}
 		
 	}
-	
-	/**
-	 * @param packet
-	 */
-	private void handlePongPacket(Packet packet) {
-		//FIXME: implement me!
-	}
 
 	/**
 	 * @param packet
 	 */
 	private void handleDisconnectPacket(Packet packet) {
+		RemoteClient client = getRemoteClient(packet.getSenderHost(), packet.getSenderPort());
+		
+		if (client == null) {
+			logger.warning("cannot identify client " + packet.getSenderHost() + ":" + packet.getSenderPort());
+			return;
+		}
+		
+		// remove client from clients list
+		synchronized (clients) {
+			clients.remove(client);
+		}
+		
+		// notify about disconnection
+		notifyClientDisconnected(client, DisconnectReason.Leaving);
 		
 	}
-
+	
 	private void handlePacket(Packet packet) {
 		
 		/*
@@ -281,6 +300,13 @@ public class Server {
 		}
 	}
 	
+	/**
+	 * @param packet
+	 */
+	private void handlePongPacket(Packet packet) {
+		//FIXME: implement me!
+	}
+
 	/**
 	 * @param packet
 	 */
@@ -320,7 +346,7 @@ public class Server {
 		client.notifyPacketReceived(body);
 		
 	}
-
+	
 	/**
 	 * @param result
 	 * @return
@@ -351,6 +377,20 @@ public class Server {
 		// notify all
 		for (ConnectionListener l : copy) {
 			l.clientConnected(client);
+		}
+	}
+
+	private void notifyClientDisconnected(RemoteClient client, DisconnectReason reason) {
+		
+		// make copy of listeners
+		synchronized (connectionListeners) {
+			ConnectionListener[] copy = new ConnectionListener[connectionListeners.size()];
+			connectionListeners.toArray(copy);
+		}
+		
+		// iterate
+		for (ConnectionListener l : connectionListeners) {
+			l.clientDisconnected(client, reason);
 		}
 	}
 	

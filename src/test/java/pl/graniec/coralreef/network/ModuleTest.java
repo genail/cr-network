@@ -32,6 +32,9 @@ package pl.graniec.coralreef.network;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +42,7 @@ import org.junit.Test;
 import pl.graniec.coralreef.network.client.Client;
 import pl.graniec.coralreef.network.exceptions.NetworkException;
 import pl.graniec.coralreef.network.server.ConnectionListener;
+import pl.graniec.coralreef.network.server.DisconnectReason;
 import pl.graniec.coralreef.network.server.RemoteClient;
 import pl.graniec.coralreef.network.server.Server;
 
@@ -48,6 +52,8 @@ import pl.graniec.coralreef.network.server.Server;
  */
 public class ModuleTest {
 
+	final Mockery context = new JUnit4Mockery();
+	
 	/**
 	 * 
 	 */
@@ -76,18 +82,41 @@ public class ModuleTest {
 	
 	@Test
 	public void testConnection() throws NetworkException {
+		
+		final ConnectionListener cl = context.mock(ConnectionListener.class);
+		
+		context.checking(new Expectations(){{
+			oneOf(cl).clientConnected(with(any(RemoteClient.class)));
+			ignoring(cl).clientDisconnected(with(any(RemoteClient.class)), with(any(DisconnectReason.class)));
+		}});
+		
+		server.addConnectionListener(cl);
+		
 		client.connect("127.0.0.1", PORT);
 		
 		assertTrue(client.isConnected());
+		context.assertIsSatisfied();
 	}
 	
 	@Test
-	public void testDisconnection() throws NetworkException {
+	public void testDisconnection() throws NetworkException, InterruptedException {
 		
 		client.connect("127.0.0.1", PORT);
+		
+		final ConnectionListener cl = context.mock(ConnectionListener.class);
+		
+		context.checking(new Expectations(){{
+			oneOf(cl).clientDisconnected(with(any(RemoteClient.class)), with(any(DisconnectReason.class)));
+		}});
+		
+		server.addConnectionListener(cl);
+		
 		client.disconnect();
 		
+		Thread.sleep(50);
+		
 		assertFalse(client.isConnected());
+		context.assertIsSatisfied();
 	}
 
 }
