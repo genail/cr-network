@@ -58,20 +58,6 @@ public interface Server {
 	boolean addConnectionListener(ConnectionListener l);
 	
 	/**
-	 * Removes a previously added listener from connection listening.
-	 * <p>
-	 * If there is not such listener registered then the result of
-	 * this method will be <code>false</code>.
-	 * 
-	 * @param l Listener object.
-	 * 
-	 * @return <code>true</code> if listener is successfully removed.
-	 * 
-	 * @see #addConnectionListener(ConnectionListener)
-	 */
-	boolean removeConnectionListener(ConnectionListener l);
-	
-	/**
 	 * Closes the opened server. Closing will disconnect all currently
 	 * connected clients, This will also trigger disconnection event for
 	 * all connection listeners.
@@ -79,6 +65,20 @@ public interface Server {
 	 * @see #open(int)
 	 */
 	void close();
+	
+	/**
+	 * Provides a port number on which the server is running on.
+	 * 
+	 * @return Port number or <code>0</code> if server is not open.
+	 */
+	int getPort();
+	
+	/**
+	 * Tells if server is open for new connections.
+	 * 
+	 * @see #open(int)
+	 */
+	boolean isOpen();
 	
 	/**
 	 * Opens the non-opened server on current port. If server is already
@@ -96,16 +96,16 @@ public interface Server {
 	void open(int port);
 	
 	/**
-	 * Provides a port number on which the server is running on.
+	 * Removes a previously added listener from connection listening.
+	 * <p>
+	 * If there is not such listener registered then the result of
+	 * this method will be <code>false</code>.
 	 * 
-	 * @return Port number or <code>0</code> if server is not open.
-	 */
-	int getPort();
-	
-	/**
-	 * Tells if server is open for new connections.
+	 * @param l Listener object.
 	 * 
-	 * @see #open(int)
+	 * @return <code>true</code> if listener is successfully removed.
+	 * 
+	 * @see #addConnectionListener(ConnectionListener)
 	 */
-	boolean isOpen();
+	boolean removeConnectionListener(ConnectionListener l);
 }
