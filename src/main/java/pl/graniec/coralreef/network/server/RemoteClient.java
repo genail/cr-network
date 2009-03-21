@@ -44,7 +44,7 @@ public interface RemoteClient {
 	
 	/**
 	 * Add a packet listener object that will listen for all
-	 * data sent by this remote client. When this listener object
+	 * data sent by this remote client. If this listener object
 	 * is already listening on this client, then <code>false</code>
 	 * is returned.
 	 * 

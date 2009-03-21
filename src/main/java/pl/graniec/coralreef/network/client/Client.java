@@ -28,11 +28,82 @@
  */
 package pl.graniec.coralreef.network.client;
 
+import java.io.Externalizable;
+import java.io.Serializable;
+
+import pl.graniec.coralreef.network.PacketListener;
+import pl.graniec.coralreef.network.server.Server;
+
 /**
- * 
+ * Client is a host that connects to the {@link Server} in order
+ * to exchange data.
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
 public interface Client {
 
+	/**
+	 * Add a packet listener object that will listen for all
+	 * data sent by this client. If this listener object
+	 * is already listening on this client, then <code>false</code>
+	 * is returned.
+	 * 
+	 * @param Listener object.
+	 * 
+	 * @return <code>true</code> if this listener was successfully added. 
+	 * 
+	 * @see #removePacketListener(PacketListener)
+	 */
+	boolean addPacketListener(PacketListener l);
+	
+	/**
+	 * Connects not-connected client to the remote host on given port.
+	 * From now on any data can be transfered.
+	 * 
+	 * @param host Hostname of target machine. Can be host as
+	 * <code>sun.com</code> or textual representation od IP address.
+	 * @param port Port on which the server is running on.
+	 * 
+	 * @see #disconnect()
+	 */
+	void connect(String host, int port);
+	
+	/**
+	 * Disconnects connected client from server. From this point
+	 * no data can be sent or received.
+	 * 
+	 * @see #connect(String, int)
+	 */
+	void disconnect();
+	
+	/**
+	 * Tells if this client is currently connected to remote server.
+	 * 
+	 * @see #connect(String, int)
+	 */
+	boolean isConnected();
+	
+	/**
+	 * Removes previously added packet listener from further listening
+	 * for packets of this client. If this listener haven't been
+	 * listening then <code>false</code> is returned.
+	 * 
+	 * @param l Listener object.
+	 * 
+	 * @return <code>true</code> if this object was successfully removed.
+	 * 
+	 * @see #addPacketListener(PacketListener)
+	 */
+	boolean removePacketListener(PacketListener l);
+	
+	/**
+	 * Sends data to remote server (if still connected).
+	 * <p>
+	 * Given data must implements be either {@link Serializable} or
+	 * {@link Externalizable} interface in order to be sent through the
+	 * network. It's recommended to use the second one because of
+	 * high ability of data organization.
+	 */
+	void send(Object data);
+	
 }
