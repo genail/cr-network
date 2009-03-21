@@ -50,7 +50,7 @@ import pl.graniec.coralreef.network.packets.DisconnectPacketData;
 import pl.graniec.coralreef.network.packets.HeaderData;
 import pl.graniec.coralreef.network.packets.PacketData;
 import pl.graniec.coralreef.network.packets.PassportAssignData;
-import pl.graniec.coralreef.network.packets.UserData;
+import pl.graniec.coralreef.network.packets.ClientData;
 
 /**
  * The client of server on client-side.
@@ -222,7 +222,7 @@ public class Client {
 			// if this is user data then I should send UserData class
 			// that contains head of package and its body
 			HeaderData header = new HeaderData(passport);
-			toSendData = new UserData(header, data);
+			toSendData = new ClientData(header, data);
 			
 		} else {
 			

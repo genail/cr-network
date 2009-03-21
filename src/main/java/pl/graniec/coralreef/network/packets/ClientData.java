@@ -37,7 +37,7 @@ import java.io.ObjectOutput;
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class UserData implements PacketData, Externalizable {
+public class ClientData implements PacketData, Externalizable {
 	private HeaderData header;
 	private PacketData body;
 	
@@ -45,7 +45,7 @@ public class UserData implements PacketData, Externalizable {
 	 * @param header
 	 * @param body
 	 */
-	public UserData(HeaderData header, PacketData body) {
+	public ClientData(HeaderData header, PacketData body) {
 		super();
 		this.header = header;
 		this.body = body;

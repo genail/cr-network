@@ -54,7 +54,7 @@ import pl.graniec.coralreef.network.packets.Packet;
 import pl.graniec.coralreef.network.packets.PacketData;
 import pl.graniec.coralreef.network.packets.PassportAssignData;
 import pl.graniec.coralreef.network.packets.PongPacketData;
-import pl.graniec.coralreef.network.packets.UserData;
+import pl.graniec.coralreef.network.packets.ClientData;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -277,7 +277,7 @@ public class Server {
 		/*
 		 * Packets falls into two groups:
 		 * 1) Special control packets
-		 * 2) User custom packets.
+		 * 2) Client packets.
 		 * 
 		 * The first one is used only by server to connect, disconnect,
 		 * examine and keep alive server clients. User programmer doesn't
@@ -293,7 +293,7 @@ public class Server {
 		if (data instanceof ControllPacketData) {
 			handleControllPacket(packet);
 		} else
-		if (data instanceof UserData){
+		if (data instanceof ClientData){
 			handleUserDataPacket(packet);
 		} else {
 			logger.severe("unknown top-level packet data class: " + data.getClass().getName());
@@ -326,8 +326,8 @@ public class Server {
 		 * ( by packet handling event ).
 		 */
 		
-		final HeaderData header = ((UserData)packet.getData()).getHeader();
-		final PacketData body   = ((UserData)packet.getData()).getBody();
+		final HeaderData header = ((ClientData)packet.getData()).getHeader();
+		final PacketData body   = ((ClientData)packet.getData()).getBody();
 		
 		RemoteClient client;
 		
