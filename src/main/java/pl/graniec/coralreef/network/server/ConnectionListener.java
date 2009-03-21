@@ -30,5 +30,22 @@
 package pl.graniec.coralreef.network.server;
 
 public interface ConnectionListener {
+	/**
+	 * Invoked when a new client has made a connection to the server.
+	 * This method provides a {@link RemoteClient} class that you
+	 * can use to communicate with that client.
+	 * 
+	 *  @param client Client that made a connection.
+	 */
+	void clientConnected(RemoteClient client);
+	
+	/**
+	 * Invoked when a connected remote client has been disconnected
+	 * from the server. This event occurs always for every
+	 * {@link #clientConnected(RemoteClient)} event.
+	 * 
+	 * @param client Client that was disconnected.
+	 */
+	void clientDisconnected(RemoteClient client);
 	
 }
