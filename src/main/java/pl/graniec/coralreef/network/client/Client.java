@@ -32,6 +32,7 @@ import java.io.Externalizable;
 import java.io.Serializable;
 
 import pl.graniec.coralreef.network.PacketListener;
+import pl.graniec.coralreef.network.exceptions.NetworkException;
 import pl.graniec.coralreef.network.server.Server;
 
 /**
@@ -65,8 +66,9 @@ public interface Client {
 	 * @param port Port on which the server is running on.
 	 * 
 	 * @see #disconnect()
+	 * 
 	 */
-	void connect(String host, int port);
+	void connect(String host, int port) throws NetworkException;
 	
 	/**
 	 * Disconnects connected client from server. From this point
@@ -104,6 +106,6 @@ public interface Client {
 	 * network. It's recommended to use the second one because of
 	 * high ability of data organization.
 	 */
-	void send(Object data);
+	void send(Object data) throws NetworkException;
 	
 }

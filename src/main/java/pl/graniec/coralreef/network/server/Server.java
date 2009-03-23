@@ -30,6 +30,8 @@
 package pl.graniec.coralreef.network.server;
 
 import pl.graniec.coralreef.network.client.Client;
+import pl.graniec.coralreef.network.exceptions.NetworkException;
+import pl.graniec.coralreef.network.exceptions.PortInUseException;
 
 /**
  * Server is a service that listens for incoming connection on specified
@@ -91,9 +93,15 @@ public interface Server {
 	 * 
 	 * @param port Port number on which server will be opened.
 	 * 
+	 * @throws PortInUseException When given port is already in use.
+	 * @throws SecurityException When user is not allowed to open server on
+	 * that port.
+	 * @throws NetworkException Directly, when an exception occurred that
+	 * cannot be assigned to these above.
+	 * 
 	 * @see #close()
 	 */
-	void open(int port);
+	void open(int port) throws NetworkException;
 	
 	/**
 	 * Removes a previously added listener from connection listening.

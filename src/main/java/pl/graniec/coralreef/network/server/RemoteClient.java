@@ -29,9 +29,11 @@
 package pl.graniec.coralreef.network.server;
 
 import java.io.Externalizable;
+import java.io.NotSerializableException;
 import java.io.Serializable;
 
 import pl.graniec.coralreef.network.PacketListener;
+import pl.graniec.coralreef.network.exceptions.NetworkException;
 
 /**
  * 
@@ -93,7 +95,14 @@ public interface RemoteClient {
 	 * {@link Externalizable} interface in order to be sent through the
 	 * network. It's recommended to use the second one because of
 	 * high ability of data organization.
+	 * 
+	 * @throws NotSerializableException When given object does not implements
+	 * {@link Serializable} or {@link Externalizable} interface.
+	 * 
+	 * @throws NetworkException When an error occurred while sending this data.
+	 * This usually means that client have just disconnected and data were not
+	 * sent. 
 	 */
-	void send(Object data);
+	void send(Object data) throws NotSerializableException, NetworkException;
 	
 }
