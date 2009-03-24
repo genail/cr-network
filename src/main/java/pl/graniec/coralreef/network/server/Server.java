@@ -43,6 +43,12 @@ import pl.graniec.coralreef.network.exceptions.PortInUseException;
  *
  */
 public interface Server {
+	
+	public static final int REASON_CONNECTION_RESET = 1;
+	public static final int REASON_LEAVING = 2;
+	public static final int REASON_TIMEOUT = 3;
+	public static final int REASON_USER_ACTION = 4;
+	
 	/**
 	 * Makes a listener object to listen for incoming connections
 	 * on this server. Also every disconnect event will be notified

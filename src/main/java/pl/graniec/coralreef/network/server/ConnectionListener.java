@@ -45,7 +45,9 @@ public interface ConnectionListener {
 	 * {@link #clientConnected(RemoteClient)} event.
 	 * 
 	 * @param client Client that was disconnected.
+	 * @param reason Disconnection reason (see {@link Server})
+	 * @param reasonString String that holds the disconnection reason
 	 */
-	void clientDisconnected(RemoteClient client);
+	void clientDisconnected(RemoteClient client, int reason, String reasonString);
 	
 }
