@@ -26,35 +26,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-package pl.graniec.coralreef.network.server;
-
-import pl.graniec.coralreef.network.DisconnectReason;
+package pl.graniec.coralreef.network;
 
 /**
- * Connection listener for {@link Server} objects.
- * 
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
+ *
  */
-public interface ConnectionListener {
+public enum DisconnectReason {
 	/**
-	 * Invoked when a new client has made a connection to the server.
-	 * This method provides a {@link RemoteClient} class that you
-	 * can use to communicate with that client.
-	 * 
-	 *  @param client Client that made a connection.
+	 * Connection closed by other side. 
 	 */
-	void clientConnected(RemoteClient client);
+	Reset,
 	
 	/**
-	 * Invoked when a connected remote client has been disconnected
-	 * from the server. This event occurs always for every
-	 * {@link #clientConnected(RemoteClient)} event.
-	 * 
-	 * @param client Client that was disconnected.
-	 * @param reason Disconnection reason
-	 * @param reasonString String that holds the disconnection reason
+	 * No response from host.
 	 */
-	void clientDisconnected(RemoteClient client, DisconnectReason reason, String reasonString);
+	Timeout,
 	
+	/**
+	 * Connection closed by library-user action (locally).
+	 */
+	UserAction,
 }
