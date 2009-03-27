@@ -29,6 +29,7 @@
 package pl.graniec.coralreef.network.client;
 
 import java.io.Externalizable;
+import java.io.NotSerializableException;
 import java.io.Serializable;
 
 import pl.graniec.coralreef.network.PacketListener;
@@ -44,12 +45,27 @@ import pl.graniec.coralreef.network.server.Server;
 public interface Client {
 
 	/**
+	 * Add a connection listener object that will listen for
+	 * all connection events done by this client. This includes
+	 * connection as well as disconnections. If this listener object
+	 * is already listening on this client then <code>false</code>
+	 * is returned
+	 * 
+	 * @param l Listener object.
+	 * 
+	 * @return <code>true</code> if this listener was successfully added.
+	 * 
+	 * @see #removeConnectionListener(ConnectionListener)
+	 */
+	boolean addConnectionListener(ConnectionListener l);
+	
+	/**
 	 * Add a packet listener object that will listen for all
 	 * data sent by this client. If this listener object
-	 * is already listening on this client, then <code>false</code>
+	 * is already listening on this client then <code>false</code>
 	 * is returned.
 	 * 
-	 * @param Listener object.
+	 * @param l Listener object.
 	 * 
 	 * @return <code>true</code> if this listener was successfully added. 
 	 * 
@@ -84,11 +100,24 @@ public interface Client {
 	 * @see #connect(String, int)
 	 */
 	boolean isConnected();
+
+	/**
+	 * Removes previously added connection listener from further listening
+	 * for connection events of this client. If this listener haven't been
+	 * listening until now then <code>false</code> is returned.
+	 * 
+	 * @param l Listener object.
+	 * 
+	 * @return <code>true</code> if this object was successfully removed.
+	 * 
+	 * @see #addConnectionListener(ConnectionListener)
+	 */
+	boolean removeConnectionListener(ConnectionListener l);
 	
 	/**
 	 * Removes previously added packet listener from further listening
 	 * for packets of this client. If this listener haven't been
-	 * listening then <code>false</code> is returned.
+	 * listening until now then <code>false</code> is returned.
 	 * 
 	 * @param l Listener object.
 	 * 
@@ -106,6 +135,7 @@ public interface Client {
 	 * network. It's recommended to use the second one because of
 	 * high ability of data organization.
 	 */
-	void send(Object data) throws NetworkException;
+	void send(Object data) throws NotSerializableException, NetworkException;
+	
 	
 }

@@ -65,19 +65,19 @@
   <dia:layer name="Background" visible="true">
     <dia:object type="UML - Class" version="0" id="O0">
       <dia:attribute name="obj_pos">
-        <dia:point val="98,15"/>
+        <dia:point val="99,16"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="97.95,14.95;115.35,22.65"/>
+        <dia:rectangle val="98.95,15.95;119.15,25.25"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="98,15"/>
+        <dia:point val="99,16"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="17.300000000000001"/>
+        <dia:real val="20.100000000000001"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="7.5999999999999996"/>
+        <dia:real val="9.1999999999999993"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#Client#</dia:string>
@@ -167,6 +167,54 @@
       <dia:attribute name="operations">
         <dia:composite type="umloperation">
           <dia:attribute name="name">
+            <dia:string>#addConnectionListener#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="stereotype">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#boolean#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="inheritance_type">
+            <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="query">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="parameters">
+            <dia:composite type="umlparameter">
+              <dia:attribute name="name">
+                <dia:string>#l#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="type">
+                <dia:string>#ConnectionListener#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="value">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="comment">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="kind">
+                <dia:enum val="0"/>
+              </dia:attribute>
+            </dia:composite>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umloperation">
+          <dia:attribute name="name">
             <dia:string>#addPacketListener#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
@@ -200,6 +248,54 @@
               </dia:attribute>
               <dia:attribute name="type">
                 <dia:string>#PacketListener#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="value">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="comment">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="kind">
+                <dia:enum val="0"/>
+              </dia:attribute>
+            </dia:composite>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umloperation">
+          <dia:attribute name="name">
+            <dia:string>#removeConnectionListener#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="stereotype">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#boolean#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="inheritance_type">
+            <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="query">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="parameters">
+            <dia:composite type="umlparameter">
+              <dia:attribute name="name">
+                <dia:string>#l#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="type">
+                <dia:string>#ConnectionListener#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -1694,21 +1790,21 @@
     </dia:object>
     <dia:object type="UML - Association" version="1" id="O8">
       <dia:attribute name="obj_pos">
-        <dia:point val="97.9497,18.8"/>
+        <dia:point val="109.05,25.2503"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="94.3003,18.75;97.9997,30.7425"/>
+        <dia:rectangle val="89.1,25.2003;109.25,28.7495"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="97.9497,18.8"/>
-        <dia:point val="96.15,18.8"/>
-        <dia:point val="96.15,29.8"/>
-        <dia:point val="94.3503,29.8"/>
+        <dia:point val="109.05,25.2503"/>
+        <dia:point val="109.05,26.5999"/>
+        <dia:point val="89.15,26.5999"/>
+        <dia:point val="89.15,27.9495"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
-        <dia:enum val="0"/>
         <dia:enum val="1"/>
         <dia:enum val="0"/>
+        <dia:enum val="1"/>
       </dia:attribute>
       <dia:attribute name="autorouting">
         <dia:boolean val="true"/>
@@ -1756,7 +1852,7 @@
         </dia:composite>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O0" connection="20"/>
+        <dia:connection handle="0" to="O0" connection="24"/>
         <dia:connection handle="1" to="O2" connection="10"/>
       </dia:connections>
     </dia:object>
@@ -2224,15 +2320,15 @@
     </dia:object>
     <dia:object type="UML - Association" version="1" id="O13">
       <dia:attribute name="obj_pos">
-        <dia:point val="106.65,14.9495"/>
+        <dia:point val="109.05,15.9497"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="106.6,7.13026;109.5,16.5495"/>
+        <dia:rectangle val="108.9,7.13026;109.5,17.5497"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="106.65,14.9495"/>
-        <dia:point val="106.65,11.0649"/>
-        <dia:point val="108.95,11.0649"/>
+        <dia:point val="109.05,15.9497"/>
+        <dia:point val="109.05,11.565"/>
+        <dia:point val="108.95,11.565"/>
         <dia:point val="108.95,7.18026"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
@@ -2286,7 +2382,7 @@
         </dia:composite>
       </dia:attribute>
       <dia:connections>
-        <dia:connection handle="0" to="O0" connection="20"/>
+        <dia:connection handle="0" to="O0" connection="24"/>
         <dia:connection handle="1" to="O12" connection="12"/>
       </dia:connections>
     </dia:object>
