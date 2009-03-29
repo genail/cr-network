@@ -17,7 +17,7 @@
     <groupId>pl.graniec</groupId>
     <artifactId>cr-network</artifactId>
     <packaging>jar</packaging>
-    <version>0.1a-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     
     <scm>
         <connection>scm:svn:svn://atom/general/CoralReef/trunk/cr-network</connection>
