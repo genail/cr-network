@@ -19,6 +19,12 @@
     <packaging>jar</packaging>
     <version>0.1a-SNAPSHOT</version>
     
+    <scm>
+        <connection>scm:svn:svn://atom/general/CoralReef/trunk/cr-network</connection>
+        <developerConnection>scm:svn:svn://atom/general/CoralReef/trunk/cr-network</developerConnection>
+        <url>svn://atom/general/CoralReef/trunk/cr-network</url>
+    </scm>
+    
     <name>Coral Reef Network Library</name>
     <url>http://graniec.pl/</url>
 
