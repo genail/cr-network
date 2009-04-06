@@ -30,6 +30,7 @@ package pl.graniec.coralreef.network.client;
 
 import pl.graniec.coralreef.network.DisconnectReason;
 
+
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
@@ -47,9 +48,9 @@ public interface ConnectionListener {
 	 * Invoked when client disconnects from the server, also when this
 	 * is a client action.
 	 * 
-	 * @param reason Disconnection reason
+	 * @param reason Disconnection reason from {@link DisconnectReason}.
 	 * @param reasonString String that contains disconnection reason
 	 */
-	void clientDisconnected(DisconnectReason reason, String reasonString);
+	void clientDisconnected(int reason, String reasonString);
 	
 }

@@ -32,19 +32,22 @@ package pl.graniec.coralreef.network;
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public enum DisconnectReason {
+public class DisconnectReason {
 	/**
 	 * Connection closed by other side. 
 	 */
-	Reset,
+	public final static int Reset = 0;
 	
 	/**
 	 * No response from host.
 	 */
-	Timeout,
+	public final static int Timeout = 1;
 	
 	/**
 	 * Connection closed by library-user action (locally).
 	 */
-	UserAction,
+	public final static int UserAction = 2;
+	
+	private DisconnectReason() {
+	}
 }
