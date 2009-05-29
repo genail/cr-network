@@ -37,5 +37,5 @@ public interface PacketListener {
 	 * 
 	 * @param data Contents of this packet. 
 	 */
-	void packetReceiver(Object data);
+	void packetReceived(Object data);
 }
